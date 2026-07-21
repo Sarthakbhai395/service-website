@@ -1,18 +1,19 @@
 "use client";
 
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import { motion, useInView } from "framer-motion";
 import { SectionHeading } from "@/components/common/section-heading";
 import { GlassCard } from "@/components/cards/glass-card";
 import { AuroraField } from "@/components/backgrounds/aurora-field";
-import { ShieldCheck, Cpu, Activity, Eye, Target, Zap } from "lucide-react";
+import { ShieldCheck, Cpu, Activity, Eye, Target, Zap, Users, Sparkles } from "lucide-react";
+import { apiClient, fallbackTeamMembers } from "@/services/api-client";
 
 const coreValues = [
   {
     title: "Architectural Precision",
     description: "Every project starts with data models, API contracts, and type definitions — before a single line of implementation code is written.",
     icon: Cpu,
-    accent: "text-accent-blue",
+    accent: "text-gold",
   },
   {
     title: "Security-First Engineering",
@@ -47,12 +48,12 @@ const coreValues = [
 ];
 
 const milestones = [
-  { year: "2019", event: "Founded with a vision to bridge design and engineering" },
+  { year: "2019", event: "Founded CodeNova with a vision to bridge design and high-performance engineering" },
   { year: "2020", event: "Shipped first enterprise SaaS platform — 50K daily active users" },
-  { year: "2021", event: "Expanded to 25+ engineers across 4 time zones" },
+  { year: "2021", event: "Expanded to 25+ senior engineers and product architects" },
   { year: "2022", event: "Launched AI integration practice — LLM orchestration services" },
   { year: "2023", event: "Surpassed 150+ products shipped, $45M+ in client revenue enabled" },
-  { year: "2024", event: "Recognized as a top engineering partner by multiple Awwwards winners" },
+  { year: "2024", event: "Recognized as a top engineering studio by industry leaders" },
 ];
 
 const stats = [
@@ -66,7 +67,7 @@ function AnimatedStat({ value, label, delay }: { value: string; label: string; d
   const ref = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { once: true, margin: "-50px" });
   const match = value.match(/^([\d.]+)(.*)$/);
-  const [displayNum, setDisplayNum] = React.useState(0);
+  const [displayNum, setDisplayNum] = useState(0);
 
   useEffect(() => {
     if (!inView || !match) return;
@@ -92,10 +93,10 @@ function AnimatedStat({ value, label, delay }: { value: string; label: string; d
       transition={{ delay, duration: 0.5 }}
       className="flex flex-col items-center gap-1 text-center py-8"
     >
-      <span className="text-3xl md:text-4xl font-heading font-bold text-white tracking-tight">
+      <span className="text-3xl md:text-4xl font-heading font-extrabold text-gold tracking-tight">
         {match ? `${match[1].includes('.') ? displayNum.toFixed(2) : Math.round(displayNum)}${match[2]}` : value}
       </span>
-      <span className="text-[10px] font-mono uppercase tracking-[0.15em] text-steel">
+      <span className="text-[10px] font-mono uppercase tracking-[0.15em] text-steel font-semibold">
         {label}
       </span>
     </motion.div>
@@ -103,8 +104,24 @@ function AnimatedStat({ value, label, delay }: { value: string; label: string; d
 }
 
 export default function AboutPage() {
+  const [teamMembers, setTeamMembers] = useState<any[]>(fallbackTeamMembers);
+
+  useEffect(() => {
+    async function loadTeam() {
+      try {
+        const data = await apiClient.get<any[]>("/team");
+        if (data && data.length > 0) {
+          setTeamMembers(data);
+        }
+      } catch (e) {
+        console.info("Using fallback team data:", e);
+      }
+    }
+    loadTeam();
+  }, []);
+
   return (
-    <div className="relative min-h-screen">
+    <div className="relative min-h-screen bg-black">
       {/* Page background */}
       <AuroraField variant="default" intensity={0.5} interactive={false} />
 
@@ -118,34 +135,27 @@ export default function AboutPage() {
             transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
           >
             <SectionHeading
-              badge="Our Story"
-              title="Engineering excellence, delivered globally"
-              subtitle="A distributed team of senior architects and designers building mission-critical software for startups and Fortune 500 companies."
+              badge="Our Story & Vision"
+              title="Engineering craft & product architecture"
+              subtitle="CodeNova is a premier studio of senior architects, AI engineers, and visual designers building mission-critical software globally."
             />
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-start mt-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-start mt-6">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2, duration: 0.6 }}
-              className="flex flex-col gap-5 text-[14px] text-steel leading-[1.8] font-sans"
+              className="flex flex-col gap-5 text-sm text-steel leading-relaxed font-sans"
             >
               <p>
-                Nexus Edge was founded by a collective of senior architects and product designers
-                who believed business platforms deserve both premium visual craft and resilient,
-                hardened engineering foundations.
+                <strong className="text-white">CodeNova</strong> was founded on the belief that digital products deserve both obsessive visual refinement and rock-solid, hardened engineering foundations.
               </p>
               <p>
-                Our core stack centers on Next.js, React, TypeScript, Node.js, and Supabase. By
-                maintaining deep specialization, we build complex features — multi-tenant billing,
-                real-time analytics, database pooling, AI orchestration — with fast turnaround
-                and zero technical debt.
+                Our core stack centers on Next.js, React, TypeScript, Node.js, and Supabase. By maintaining extreme specialization, we build complex features — real-time billing, AI orchestration streams, multi-tenant databases — with rapid turnaround and zero technical debt.
               </p>
               <p>
-                Every product we ship is measured by real metrics: uptime, latency, Lighthouse
-                scores, and business impact. We don&apos;t build websites — we engineer competitive
-                advantages.
+                Every product we ship is measured by real metrics: uptime, latency, Lighthouse scores, and business revenue impact. We don&apos;t build basic websites — we engineer competitive advantages.
               </p>
             </motion.div>
 
@@ -154,15 +164,13 @@ export default function AboutPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3, duration: 0.6 }}
             >
-              <GlassCard className="p-8 flex flex-col gap-4">
-                <div className="h-10 w-10 rounded-xl border border-accent-blue/20 bg-accent-blue/[0.08] flex items-center justify-center">
-                  <Target className="h-5 w-5 text-accent-blue" />
+              <GlassCard className="p-8 flex flex-col gap-4 border-gold/30 bg-black/60 shadow-[0_20px_50px_rgba(212,175,55,0.08)]">
+                <div className="h-12 w-12 rounded-2xl border border-gold/40 bg-gold/10 flex items-center justify-center text-gold">
+                  <Target className="h-6 w-6" />
                 </div>
-                <h3 className="text-lg font-heading font-bold text-white">Our Mission</h3>
-                <p className="text-[13px] text-steel leading-relaxed font-sans">
-                  To build secure, fast, and visually stunning software platforms that empower
-                  organizations to scale their workflows globally — without compromising on
-                  quality, performance, or developer experience.
+                <h3 className="text-xl font-heading font-extrabold text-white">Our Mission</h3>
+                <p className="text-xs text-steel leading-relaxed font-sans">
+                  To build secure, blazing-fast, and visually stunning software platforms that empower ambitious teams to scale globally — without compromising on quality or performance.
                 </p>
               </GlassCard>
             </motion.div>
@@ -170,7 +178,7 @@ export default function AboutPage() {
         </div>
 
         {/* ━━━ Stats section ━━━ */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-px rounded-2xl overflow-hidden border border-white/[0.06] bg-white/[0.02] backdrop-blur-md">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-px rounded-3xl overflow-hidden border border-gold/20 bg-black/60 backdrop-blur-xl shadow-[0_16px_48px_rgba(0,0,0,0.6)]">
           {stats.map((stat, idx) => (
             <AnimatedStat
               key={idx}
@@ -181,17 +189,126 @@ export default function AboutPage() {
           ))}
         </div>
 
+        {/* ━━━ TEAM & LEADERSHIP — Dynamic Alternating Zigzag Layout ━━━ */}
+        <div className="flex flex-col gap-12">
+          <SectionHeading
+            badge="Leadership & Architects"
+            title="Meet the minds behind CodeNova"
+            subtitle="Uploaded and managed dynamically via our secure Admin Panel."
+          />
+
+          <div className="flex flex-col gap-16">
+            {teamMembers.map((member, idx) => {
+              const isEven = idx % 2 === 0;
+              return (
+                <div
+                  key={member.id || idx}
+                  className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 items-center"
+                >
+                  {/* Left Column in Zigzag: Text if Even, Image if Odd */}
+                  <motion.div
+                    initial={{ opacity: 0, x: isEven ? -40 : 40 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true, margin: "-50px" }}
+                    transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+                    className={`md:col-span-6 flex flex-col gap-4 ${isEven ? "md:order-1" : "md:order-2"}`}
+                  >
+                    {isEven ? (
+                      /* Description Card */
+                      <GlassCard className="p-8 md:p-10 border-gold/30 bg-black/80 flex flex-col gap-4 shadow-[0_20px_50px_rgba(212,175,55,0.06)]">
+                        <div className="flex items-center gap-2">
+                          <Sparkles className="h-4 w-4 text-gold" />
+                          <span className="text-[10px] font-mono tracking-widest text-gold uppercase font-bold">
+                            0{idx + 1} • Key Leader
+                          </span>
+                        </div>
+                        <h3 className="text-2xl font-heading font-extrabold text-white">
+                          {member.name}
+                        </h3>
+                        <span className="text-xs font-mono tracking-wider text-gold font-bold uppercase -mt-2">
+                          {member.role}
+                        </span>
+                        <p className="text-xs md:text-sm text-steel leading-relaxed font-sans pt-2 border-t border-white/10">
+                          {member.description}
+                        </p>
+                      </GlassCard>
+                    ) : (
+                      /* Image Card */
+                      <div className="relative aspect-[4/3] rounded-3xl overflow-hidden border border-gold/30 shadow-[0_20px_50px_rgba(212,175,55,0.12)] group">
+                        <img
+                          src={member.imageUrl || member.avatar || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=800"}
+                          alt={member.name}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-transparent" />
+                        <div className="absolute bottom-6 left-6 right-6">
+                          <h4 className="text-lg font-heading font-bold text-white">{member.name}</h4>
+                          <p className="text-xs font-mono text-gold uppercase">{member.role}</p>
+                        </div>
+                      </div>
+                    )}
+                  </motion.div>
+
+                  {/* Right Column in Zigzag: Image if Even, Text if Odd */}
+                  <motion.div
+                    initial={{ opacity: 0, x: isEven ? 40 : -40 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true, margin: "-50px" }}
+                    transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+                    className={`md:col-span-6 flex flex-col gap-4 ${isEven ? "md:order-2" : "md:order-1"}`}
+                  >
+                    {isEven ? (
+                      /* Image Card */
+                      <div className="relative aspect-[4/3] rounded-3xl overflow-hidden border border-gold/30 shadow-[0_20px_50px_rgba(212,175,55,0.12)] group">
+                        <img
+                          src={member.imageUrl || member.avatar || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=800"}
+                          alt={member.name}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-transparent" />
+                        <div className="absolute bottom-6 left-6 right-6">
+                          <h4 className="text-lg font-heading font-bold text-white">{member.name}</h4>
+                          <p className="text-xs font-mono text-gold uppercase">{member.role}</p>
+                        </div>
+                      </div>
+                    ) : (
+                      /* Description Card */
+                      <GlassCard className="p-8 md:p-10 border-gold/30 bg-black/80 flex flex-col gap-4 shadow-[0_20px_50px_rgba(212,175,55,0.06)]">
+                        <div className="flex items-center gap-2">
+                          <Sparkles className="h-4 w-4 text-gold" />
+                          <span className="text-[10px] font-mono tracking-widest text-gold uppercase font-bold">
+                            0{idx + 1} • Key Leader
+                          </span>
+                        </div>
+                        <h3 className="text-2xl font-heading font-extrabold text-white">
+                          {member.name}
+                        </h3>
+                        <span className="text-xs font-mono tracking-wider text-gold font-bold uppercase -mt-2">
+                          {member.role}
+                        </span>
+                        <p className="text-xs md:text-sm text-steel leading-relaxed font-sans pt-2 border-t border-white/10">
+                          {member.description}
+                        </p>
+                      </GlassCard>
+                    )}
+                  </motion.div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
         {/* ━━━ Timeline ━━━ */}
         <div>
           <SectionHeading
             badge="Our Journey"
-            title="Building since 2019"
-            subtitle="Key milestones in our evolution from boutique studio to global engineering practice."
+            title="Building scalable software since 2019"
+            subtitle="Key milestones in our evolution into a global engineering studio."
           />
 
-          <div className="relative mt-4">
+          <div className="relative mt-6">
             {/* Vertical line */}
-            <div className="absolute left-4 md:left-1/2 top-0 bottom-0 w-[1px] bg-gradient-to-b from-accent-blue/20 via-accent-violet/20 to-transparent" />
+            <div className="absolute left-4 md:left-1/2 top-0 bottom-0 w-[1px] bg-gradient-to-b from-gold/30 via-accent-violet/30 to-transparent" />
 
             <div className="flex flex-col gap-8">
               {milestones.map((milestone, idx) => (
@@ -206,13 +323,13 @@ export default function AboutPage() {
                   }`}
                 >
                   {/* Dot on the line */}
-                  <div className="absolute left-2.5 md:left-1/2 md:-translate-x-1/2 top-1 h-3 w-3 rounded-full border-2 border-accent-blue/40 bg-void" />
+                  <div className="absolute left-2.5 md:left-1/2 md:-translate-x-1/2 top-1 h-3 w-3 rounded-full border-2 border-gold bg-black shadow-[0_0_8px_rgba(212,175,55,0.6)]" />
 
                   <div className="flex flex-col gap-1">
-                    <span className="text-[11px] font-mono tracking-[0.15em] text-accent-blue uppercase">
+                    <span className="text-xs font-mono tracking-[0.15em] text-gold uppercase font-bold">
                       {milestone.year}
                     </span>
-                    <p className="text-[13px] text-steel leading-relaxed font-sans">
+                    <p className="text-xs md:text-sm text-steel leading-relaxed font-sans">
                       {milestone.event}
                     </p>
                   </div>
@@ -226,11 +343,11 @@ export default function AboutPage() {
         <div>
           <SectionHeading
             badge="Core Values"
-            title="The principles we engineer by"
-            subtitle="Non-negotiable standards that define how we approach every line of code."
+            title="The engineering standards we live by"
+            subtitle="Non-negotiable principles that guide every line of code we write."
           />
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 mt-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 mt-6">
             {coreValues.map((value, idx) => {
               const Icon = value.icon;
               return (
@@ -241,14 +358,14 @@ export default function AboutPage() {
                   viewport={{ once: true, margin: "-50px" }}
                   transition={{ delay: idx * 0.06, duration: 0.5 }}
                 >
-                  <GlassCard className="p-8 flex flex-col gap-4 h-full">
-                    <div className={`h-10 w-10 rounded-xl border border-white/[0.06] bg-white/[0.03] flex items-center justify-center ${value.accent}`}>
-                      <Icon className="h-5 w-5" />
+                  <GlassCard className="p-8 flex flex-col gap-4 h-full border-white/10 hover:border-gold/40 transition-colors">
+                    <div className={`h-12 w-12 rounded-2xl border border-gold/30 bg-gold/5 flex items-center justify-center ${value.accent}`}>
+                      <Icon className="h-6 w-6 text-gold" />
                     </div>
-                    <h4 className="text-base font-heading font-bold text-ice mt-1">
+                    <h4 className="text-lg font-heading font-extrabold text-white mt-1">
                       {value.title}
                     </h4>
-                    <p className="text-[13px] text-steel leading-relaxed font-sans">
+                    <p className="text-xs text-steel leading-relaxed font-sans">
                       {value.description}
                     </p>
                   </GlassCard>
@@ -257,6 +374,7 @@ export default function AboutPage() {
             })}
           </div>
         </div>
+
       </div>
     </div>
   );

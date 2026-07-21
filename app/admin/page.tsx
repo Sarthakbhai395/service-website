@@ -6,7 +6,7 @@ import { apiClient } from "@/services/api-client";
 import { toast } from "sonner";
 import {
   ArrowRight, LogOut, Plus, Trash2, Code, Lock, Building2,
-  Star, MessageSquare, Layers, Sparkles, RefreshCw, Eye, ArrowUpRight, Check, X, ShieldCheck
+  Star, MessageSquare, Layers, Sparkles, RefreshCw, Eye, ArrowUpRight, Check, X, ShieldCheck, Users
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ShinyButton } from "@/components/buttons/shiny-button";
@@ -17,7 +17,7 @@ export default function AdminPage() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
-  const [activeTab, setActiveTab] = useState<"projects" | "services" | "brands" | "reviews" | "inquiries">("projects");
+  const [activeTab, setActiveTab] = useState<"projects" | "services" | "brands" | "reviews" | "inquiries" | "team">("projects");
 
   // Login form state
   const [email, setEmail] = useState("sarthak@gmail.com");
@@ -64,6 +64,24 @@ export default function AdminPage() {
   // Inquiries state & filter
   const [inquiriesList, setInquiriesList] = useState<any[]>([]);
   const [inquiryFilter, setInquiryFilter] = useState<"All" | "New" | "Contacted" | "Converted">("All");
+
+  // Team / About state & form
+  const [teamList, setTeamList] = useState<any[]>([]);
+  const [tName, setTName] = useState("");
+  const [tRole, setTRole] = useState("");
+  const [tDescription, setTDescription] = useState("");
+  const [tImageUrl, setTImageUrl] = useState("");
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setTImageUrl(reader.result as string);
+      toast.success("Local image file converted to base64 payload!");
+    };
+    reader.readAsDataURL(file);
+  };
 
   // Check auth session
   useEffect(() => {
@@ -125,6 +143,52 @@ export default function AdminPage() {
       const inq = await apiClient.get<any[]>("/inquiries");
       setInquiriesList(inq || []);
     } catch (e) { console.info(e); }
+
+    try {
+      const tm = await apiClient.get<any[]>("/team");
+      setTeamList(tm || []);
+    } catch (e) { console.info(e); }
+  };
+
+  const handleCreateTeamMember = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!tName || !tRole || !tDescription) {
+      toast.error("Please fill out Name, Role, and Description!");
+      return;
+    }
+    setActionLoading(true);
+    try {
+      await apiClient.post("/team", {
+        name: tName,
+        role: tRole,
+        description: tDescription,
+        imageUrl: tImageUrl || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=800",
+      });
+      toast.success("Team member added! Visible in alternating zigzag order on About page.");
+      setTName("");
+      setTRole("");
+      setTDescription("");
+      setTImageUrl("");
+      fetchAllData();
+    } catch (e: any) {
+      toast.error(e.message || "Failed to add team member");
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleDeleteTeamMember = async (id: string) => {
+    if (!confirm("Are you sure you want to delete this team member?")) return;
+    setActionLoading(true);
+    try {
+      await apiClient.delete(`/team/${id}`);
+      toast.success("Team member deleted");
+      fetchAllData();
+    } catch (e: any) {
+      toast.error(e.message || "Failed to delete team member");
+    } finally {
+      setActionLoading(false);
+    }
   };
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -380,7 +444,7 @@ export default function AdminPage() {
             </div>
             <div className="flex flex-col">
               <div className="flex items-center gap-2">
-                <span className="font-heading font-extrabold text-sm tracking-wide text-white">NEXUS ADMIN</span>
+                <span className="font-heading font-extrabold text-sm tracking-wide text-white">CODENOVA ADMIN</span>
                 <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse-glow" />
               </div>
               <span className="text-[10px] font-mono text-gold tracking-widest uppercase">
@@ -397,6 +461,7 @@ export default function AdminPage() {
               { id: "brands", label: "Brands", icon: Building2, count: brandsList.length },
               { id: "reviews", label: "Reviews", icon: Star, count: reviewsList.length },
               { id: "inquiries", label: "Inquiries", icon: MessageSquare, count: inquiriesList.length },
+              { id: "team", label: "About & Team", icon: Users, count: teamList.length },
             ].map((tab) => {
               const Icon = tab.icon;
               const isActive = activeTab === tab.id;
@@ -892,6 +957,141 @@ export default function AdminPage() {
                 ))}
               </div>
             )}
+          </div>
+        )}
+
+        {/* ━━━ TAB 6: ABOUT & TEAM MANAGEMENT ━━━ */}
+        {activeTab === "team" && (
+          <div className="flex flex-col gap-10">
+            <div className="flex items-center justify-between border-b border-white/10 pb-5">
+              <div>
+                <h2 className="text-xl font-bold text-white font-heading">About Page Team Management</h2>
+                <p className="text-xs text-white/60 font-sans">
+                  Upload local laptop image files or image URLs. Members display in alternating <strong>zigzag layout</strong> on the About Page.
+                </p>
+              </div>
+
+              <span className="px-3 py-1 rounded-full border border-gold/30 bg-gold/10 text-xs font-mono text-gold font-bold">
+                {teamList.length} Team Members
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+              {/* Add Team Member Form */}
+              <form onSubmit={handleCreateTeamMember} className="lg:col-span-5 p-6 rounded-2xl border border-white/10 bg-[#0d0d0d] flex flex-col gap-4 shadow-xl">
+                <h3 className="text-base font-bold text-white border-b border-white/10 pb-2">Add New Team Member</h3>
+
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-[10px] font-mono uppercase text-white/60">Member Full Name *</label>
+                  <input
+                    type="text"
+                    value={tName}
+                    onChange={(e) => setTName(e.target.value)}
+                    placeholder="e.g. Sarthak Bhatnagar"
+                    required
+                    className="h-10 px-3 rounded-xl bg-black border border-white/10 text-xs text-white focus:outline-none focus:border-gold"
+                  />
+                </div>
+
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-[10px] font-mono uppercase text-white/60">Role / Title *</label>
+                  <input
+                    type="text"
+                    value={tRole}
+                    onChange={(e) => setTRole(e.target.value)}
+                    placeholder="e.g. Chief Solutions Architect"
+                    required
+                    className="h-10 px-3 rounded-xl bg-black border border-white/10 text-xs text-white focus:outline-none focus:border-gold"
+                  />
+                </div>
+
+                {/* Local Laptop File Upload */}
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-[10px] font-mono uppercase text-gold font-bold flex items-center justify-between">
+                    <span>Upload Image from Laptop *</span>
+                    <span className="text-[9px] text-white/50">Base64 Data URI (Works Everywhere)</span>
+                  </label>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleFileUpload}
+                    className="text-xs text-white/70 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-mono file:bg-gold file:text-black file:font-bold hover:file:bg-white cursor-pointer"
+                  />
+                </div>
+
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-[10px] font-mono uppercase text-white/60">OR External Image URL</label>
+                  <input
+                    type="text"
+                    value={tImageUrl}
+                    onChange={(e) => setTImageUrl(e.target.value)}
+                    placeholder="https://images.unsplash.com/..."
+                    className="h-10 px-3 rounded-xl bg-black border border-white/10 text-xs text-white focus:outline-none focus:border-gold"
+                  />
+                </div>
+
+                {tImageUrl && (
+                  <div className="relative aspect-[4/3] rounded-xl overflow-hidden border border-gold/40">
+                    <img src={tImageUrl} alt="Preview" className="w-full h-full object-cover" />
+                  </div>
+                )}
+
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-[10px] font-mono uppercase text-white/60">Description / Bio *</label>
+                  <textarea
+                    value={tDescription}
+                    onChange={(e) => setTDescription(e.target.value)}
+                    placeholder="Brief architectural background, domain expertise, and contributions..."
+                    rows={3}
+                    required
+                    className="p-3 rounded-xl bg-black border border-white/10 text-xs text-white focus:outline-none focus:border-gold font-sans"
+                  />
+                </div>
+
+                <ShinyButton type="submit" disabled={actionLoading} className="w-full py-3 mt-2 bg-gold text-black font-extrabold">
+                  {actionLoading ? "Saving Member..." : "Publish to About Page"}
+                </ShinyButton>
+              </form>
+
+              {/* Team Members Live Feed */}
+              <div className="lg:col-span-7 flex flex-col gap-4">
+                <h3 className="text-base font-bold text-white border-b border-white/10 pb-2">Current Team (Alternating Order)</h3>
+                
+                <div className="flex flex-col gap-4">
+                  {teamList.map((member, idx) => (
+                    <div
+                      key={member.id || idx}
+                      className="p-5 rounded-2xl border border-white/10 bg-[#0d0d0d] flex items-start justify-between gap-4 shadow-lg"
+                    >
+                      <div className="flex items-start gap-4">
+                        <img
+                          src={member.imageUrl || member.avatar || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=800"}
+                          alt={member.name}
+                          className="h-14 w-14 rounded-2xl object-cover border border-gold/40"
+                        />
+                        <div className="flex flex-col gap-1">
+                          <div className="flex items-center gap-2">
+                            <h4 className="text-sm font-bold text-white">{member.name}</h4>
+                            <span className="px-2 py-0.5 rounded-full border border-gold/30 bg-gold/10 text-[9px] font-mono text-gold font-bold">
+                              Position #{idx + 1} ({idx % 2 === 0 ? "Description Left" : "Image Left"})
+                            </span>
+                          </div>
+                          <span className="text-xs font-mono text-gold">{member.role}</span>
+                          <p className="text-xs text-white/70 line-clamp-2 mt-1">{member.description}</p>
+                        </div>
+                      </div>
+
+                      <button
+                        onClick={() => handleDeleteTeamMember(member.id)}
+                        className="p-2 rounded-lg bg-red-500/10 text-red-400 hover:bg-red-500/20 cursor-pointer shrink-0"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
           </div>
         )}
 

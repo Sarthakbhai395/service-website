@@ -1,15 +1,15 @@
 export const siteConfig = {
-  name: "Nexus Edge",
-  shortName: "Nexus",
-  description: "Enterprise-grade software development for startups, businesses, and multinational corporations.",
-  url: "https://nexus-edge.com",
-  ogImage: "https://nexus-edge.com/og-image.jpg",
+  name: "CodeNova",
+  shortName: "CodeNova",
+  description: "Next-generation software engineering, AI architecture, and digital product design studio.",
+  url: "https://codenova-studio.com",
+  ogImage: "https://codenova-studio.com/og-image.jpg",
   links: {
-    github: "https://github.com/nexus-edge",
-    twitter: "https://twitter.com/nexus-edge",
+    github: "https://github.com/Sarthakbhai395/service-website",
+    twitter: "https://twitter.com/codenova_dev",
   },
   contact: {
-    email: "inquiries@nexus-edge.com",
+    email: "contact@codenova-studio.com",
     phone: "+1 (800) 555-0199",
     address: "One World Trade Center, Suite 85, New York, NY 10007",
     coordinates: { lat: 40.7128, lng: -74.0060 }

@@ -3,14 +3,14 @@
 import React, { useRef, useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { ArrowRight, Code, LayoutTemplate, Smartphone, Gamepad2, Brain, Database, ShieldAlert, CloudUpload, Palette, Layers, Wrench } from "lucide-react";
+import { ArrowRight, Code, Smartphone, Gamepad2, Brain, Database, CloudUpload, Palette, Layers, Wrench, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export interface ServiceCardData {
   slug: string;
   name: string;
   description: string;
-  details?: string[];
+  features?: string[];
 }
 
 interface ServiceCardProps {
@@ -33,22 +33,12 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   "maintenance-support": Wrench,
 };
 
-const glowColors = [
-  "rgba(59, 130, 246, 0.10)",   // blue
-  "rgba(139, 92, 246, 0.10)",   // violet
-  "rgba(6, 182, 212, 0.10)",    // cyan
-  "rgba(244, 63, 94, 0.08)",    // rose
-  "rgba(245, 158, 11, 0.08)",   // amber
-  "rgba(16, 185, 129, 0.08)",   // emerald
-];
-
-const accentColors = [
-  "text-accent-blue",
-  "text-accent-violet",
-  "text-accent-cyan",
-  "text-accent-rose",
-  "text-accent-amber",
-  "text-emerald-400",
+const glowGradients = [
+  "from-amber-500/20 via-gold/10 to-transparent",
+  "from-violet-500/20 via-amber-400/10 to-transparent",
+  "from-cyan-500/20 via-blue-500/10 to-transparent",
+  "from-rose-500/20 via-gold/10 to-transparent",
+  "from-emerald-500/20 via-teal-400/10 to-transparent",
 ];
 
 export function ServiceCard({ service, index }: ServiceCardProps) {
@@ -58,8 +48,7 @@ export function ServiceCard({ service, index }: ServiceCardProps) {
   const [tilt, setTilt] = useState({ x: 0, y: 0 });
 
   const IconComponent = iconMap[service.slug] || Code;
-  const glowColor = glowColors[index % glowColors.length];
-  const accentColor = accentColors[index % accentColors.length];
+  const gradientClass = glowGradients[index % glowGradients.length];
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!cardRef.current) return;
@@ -71,8 +60,8 @@ export function ServiceCard({ service, index }: ServiceCardProps) {
     const centerX = rect.width / 2;
     const centerY = rect.height / 2;
     setTilt({
-      x: -(y - centerY) / 18,
-      y: (x - centerX) / 18,
+      x: -(y - centerY) / 15,
+      y: (x - centerX) / 15,
     });
   };
 
@@ -88,86 +77,73 @@ export function ServiceCard({ service, index }: ServiceCardProps) {
         onMouseMove={handleMouseMove}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={handleMouseLeave}
-        animate={{ rotateX: tilt.x, rotateY: tilt.y }}
-        transition={{ type: "spring", stiffness: 200, damping: 20 }}
+        animate={{ rotateX: tilt.x, rotateY: tilt.y, scale: isHovered ? 1.02 : 1 }}
+        transition={{ type: "spring", stiffness: 220, damping: 18 }}
         style={{ transformStyle: "preserve-3d" }}
-        className="relative h-full rounded-2xl border border-white/[0.06] bg-white/[0.02] backdrop-blur-md overflow-hidden min-h-[300px] flex flex-col justify-between transition-all duration-500 hover:border-white/[0.12] hover:shadow-[0_20px_60px_rgba(0,0,0,0.4)]"
+        className="relative h-full rounded-3xl border border-white/10 bg-black/60 backdrop-blur-xl overflow-hidden min-h-[310px] flex flex-col justify-between transition-all duration-500 hover:border-gold/40 hover:shadow-[0_20px_50px_rgba(212,175,55,0.12)] p-7"
       >
+        {/* Animated background ambient glow */}
+        <div className={cn("absolute -top-24 -right-24 w-64 h-64 rounded-full bg-gradient-to-br blur-3xl opacity-20 group-hover:opacity-60 transition-opacity duration-700 pointer-events-none", gradientClass)} />
+
         {/* Cursor spotlight */}
         {isHovered && (
           <div
             className="absolute inset-0 pointer-events-none transition-opacity duration-400"
             style={{
-              background: `radial-gradient(250px circle at ${coords.x}px ${coords.y}px, ${glowColor}, transparent 70%)`,
+              background: `radial-gradient(220px circle at ${coords.x}px ${coords.y}px, rgba(212, 175, 55, 0.12), transparent 75%)`,
             }}
           />
         )}
 
-        {/* Border beam on hover */}
-        {isHovered && (
-          <div
-            className="absolute inset-0 pointer-events-none rounded-2xl"
-            style={{
-              background: `radial-gradient(200px circle at ${coords.x}px ${coords.y}px, rgba(255,255,255,0.05), transparent 60%)`,
-              mask: "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
-              maskComposite: "exclude",
-              WebkitMaskComposite: "xor",
-              padding: "1px",
-            }}
-          />
-        )}
+        {/* Floating animated sparkles icon overlay */}
+        <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-500 text-gold pointer-events-none" style={{ transform: "translateZ(30px)" }}>
+          <Sparkles className="h-4 w-4 animate-pulse" />
+        </div>
 
-        {/* Top edge highlight */}
-        <div className="absolute top-0 left-[10%] right-[10%] h-[1px] bg-gradient-to-r from-transparent via-white/[0.05] to-transparent pointer-events-none" />
-
-        {/* Content */}
-        <div className="relative z-10 p-8 flex flex-col h-full" style={{ transform: "translateZ(20px)" }}>
-          {/* Header */}
-          <div className="flex items-start justify-between mb-auto">
-            <div className={cn(
-              "h-12 w-12 rounded-xl border border-white/[0.06] bg-white/[0.03] flex items-center justify-center transition-all duration-500",
-              isHovered && "bg-white/[0.06] border-white/[0.1]"
-            )}>
-              <IconComponent className={cn("h-5 w-5 transition-colors duration-500", accentColor)} />
-            </div>
-
-            {/* Live pulse dot */}
-            <div className="flex items-center gap-1.5">
-              <span className="relative flex h-1.5 w-1.5">
-                <span className={cn(
-                  "animate-ping absolute inline-flex h-full w-full rounded-full opacity-50",
-                  accentColor.replace("text-", "bg-")
-                )} />
-                <span className={cn(
-                  "relative inline-flex rounded-full h-1.5 w-1.5",
-                  accentColor.replace("text-", "bg-")
-                )} />
+        {/* Content Container */}
+        <div className="relative z-10 flex flex-col h-full justify-between gap-6" style={{ transform: "translateZ(25px)" }}>
+          <div>
+            {/* Icon & Live indicator */}
+            <div className="flex items-center justify-between mb-6">
+              <div className="h-14 w-14 rounded-2xl border border-gold/30 bg-gold/5 flex items-center justify-center group-hover:border-gold group-hover:bg-gold/10 transition-all duration-500 shadow-[0_0_20px_rgba(212,175,55,0.1)]">
+                <IconComponent className="h-6 w-6 text-gold group-hover:scale-110 transition-transform duration-300" />
+              </div>
+              <span className="px-2.5 py-1 rounded-full border border-white/10 bg-white/5 text-[9px] font-mono tracking-widest text-gold uppercase font-bold">
+                0{index + 1}
               </span>
             </div>
-          </div>
 
-          {/* Body */}
-          <div className="flex flex-col gap-3 mt-8" style={{ transform: "translateZ(30px)" }}>
-            <h3 className="text-lg font-heading font-bold text-ice tracking-tight group-hover:text-white transition-colors duration-300">
+            {/* Title & Description */}
+            <h3 className="text-xl font-heading font-extrabold text-white group-hover:text-gold transition-colors duration-300 tracking-tight leading-snug">
               {service.name}
             </h3>
-            <p className="text-[13px] text-steel leading-relaxed font-sans line-clamp-3">
+            <p className="text-xs text-steel leading-relaxed font-sans mt-2.5 line-clamp-3">
               {service.description}
             </p>
           </div>
 
-          {/* Footer CTA */}
-          <div className="flex items-center gap-1.5 mt-8 pt-5 border-t border-white/[0.04]" style={{ transform: "translateZ(25px)" }}>
-            <span className={cn(
-              "text-[11px] font-heading font-semibold tracking-[0.12em] uppercase transition-colors duration-300",
-              accentColor
-            )}>
-              Learn More
+          {/* Features pills if present */}
+          {service.features && service.features.length > 0 && (
+            <div className="flex flex-wrap gap-1.5 pt-2">
+              {service.features.slice(0, 3).map((feature) => (
+                <span
+                  key={feature}
+                  className="px-2.5 py-0.5 rounded-md border border-white/5 bg-white/[0.03] text-[10px] font-mono text-steel/90 tracking-wide"
+                >
+                  {feature}
+                </span>
+              ))}
+            </div>
+          )}
+
+          {/* Interactive Footer */}
+          <div className="flex items-center justify-between pt-4 border-t border-white/10 mt-auto">
+            <span className="text-[11px] font-mono tracking-widest text-gold font-bold uppercase group-hover:tracking-wider transition-all duration-300">
+              Explore Capability
             </span>
-            <ArrowRight className={cn(
-              "h-3.5 w-3.5 transition-all duration-300 group-hover:translate-x-1.5",
-              accentColor
-            )} />
+            <div className="h-8 w-8 rounded-full border border-gold/20 bg-gold/5 flex items-center justify-center group-hover:border-gold group-hover:bg-gold text-gold group-hover:text-black transition-all duration-300">
+              <ArrowRight className="h-3.5 w-3.5 group-hover:translate-x-0.5 transition-transform duration-300" />
+            </div>
           </div>
         </div>
       </motion.div>

@@ -91,16 +91,26 @@ export function FloatingNavbar() {
           {/* Logo */}
           <Link
             href="/"
-            className="flex items-center gap-2.5 group relative z-10"
+            className="flex items-center gap-3 group relative z-10"
           >
-            {/* Logo mark — geometric shape */}
-            <div className="relative h-8 w-8 flex items-center justify-center">
-              <div className="absolute inset-0 rounded-lg bg-gradient-to-br from-accent-blue to-accent-violet opacity-20 group-hover:opacity-40 transition-opacity duration-500" />
-              <div className="relative h-4 w-4 border-2 border-white/80 rounded-sm rotate-45 group-hover:rotate-[225deg] transition-transform duration-700" />
+            {/* Logo mark — glowing Nova Starburst */}
+            <div className="relative h-9 w-9 flex items-center justify-center">
+              <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-gold via-accent-violet to-gold opacity-30 blur-md group-hover:opacity-70 transition-opacity duration-500 animate-pulse-glow" />
+              <div className="relative h-9 w-9 rounded-xl border border-gold/40 bg-black/80 backdrop-blur-md flex items-center justify-center overflow-hidden shadow-[0_0_15px_rgba(212,175,55,0.25)] group-hover:border-gold transition-colors duration-300">
+                <div className="absolute inset-0 bg-gradient-to-br from-gold/20 via-transparent to-accent-violet/20" />
+                <span className="font-mono font-extrabold text-xs text-gold tracking-tighter group-hover:scale-110 transition-transform duration-300">
+                  C<span className="text-white">N</span>
+                </span>
+              </div>
             </div>
-            <span className="font-heading font-bold text-sm tracking-wide text-ice group-hover:text-white transition-colors duration-300">
-              NEXUS EDGE
-            </span>
+            <div className="flex flex-col">
+              <span className="font-heading font-extrabold text-base tracking-tight text-white group-hover:text-gold transition-colors duration-300 flex items-center gap-1">
+                CODE<span className="gradient-text font-black">NOVA</span>
+              </span>
+              <span className="text-[9px] font-mono tracking-[0.2em] text-steel uppercase -mt-1">
+                STUDIO
+              </span>
+            </div>
           </Link>
 
           {/* Desktop Navigation */}

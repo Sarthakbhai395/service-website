@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Star, ChevronLeft, ChevronRight, Quote, Sparkles } from "lucide-react";
 import { SectionHeading } from "../common/section-heading";
@@ -25,118 +25,109 @@ export function ReviewsSection() {
     loadReviews();
   }, []);
 
-  const nextSlide = useCallback(() => {
+  const nextSlide = () => {
     setActiveIdx((prev) => (prev + 1) % reviews.length);
-  }, [reviews.length]);
+  };
 
-  const prevSlide = useCallback(() => {
+  const prevSlide = () => {
     setActiveIdx((prev) => (prev - 1 + reviews.length) % reviews.length);
-  }, [reviews.length]);
+  };
 
   useEffect(() => {
     if (isPaused || reviews.length <= 1) return;
-    const interval = setInterval(nextSlide, 7000);
+    const interval = setInterval(nextSlide, 5000);
     return () => clearInterval(interval);
-  }, [isPaused, nextSlide, reviews.length]);
-
-  const current = reviews[activeIdx] || reviews[0] || fallbackTestimonials[0];
+  }, [isPaused, reviews.length]);
 
   return (
-    <section className="relative py-36 px-6 md:px-12 border-t border-gold/10 overflow-hidden bg-void font-sans">
+    <section className="relative py-28 px-6 md:px-12 border-t border-gold/10 overflow-hidden bg-black font-sans">
       {/* Background ambient gold radial glow */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-gold/[0.04] blur-[150px] pointer-events-none" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full bg-gold/[0.04] blur-[150px] pointer-events-none" />
 
-      <div className="max-w-6xl mx-auto relative z-10 flex flex-col gap-12">
+      <div className="max-w-7xl mx-auto relative z-10 flex flex-col gap-12">
         <SectionHeading
-          badge="Client Reviews & Feedback"
-          title="Trusted by engineering leaders worldwide"
-          subtitle="What founders, CTOs, and product directors say about partnering with our engineering team."
+          badge="Verified Client Reviews"
+          title="Engineered for world-class founders"
+          subtitle="What CTOs, VPs of Product, and engineering directors say about partnering with CodeNova."
           align="center"
         />
 
-        {/* Review Showcase Card */}
+        {/* Sliding Carousel Wrapper with Left & Right Gradient Fade Corner Masks */}
         <div
-          className="relative max-w-4xl mx-auto w-full"
+          className="relative max-w-5xl mx-auto w-full fade-mask-x"
           onMouseEnter={() => setIsPaused(true)}
           onMouseLeave={() => setIsPaused(false)}
         >
-          {/* Glass Card Container */}
-          <div className="relative p-8 md:p-14 rounded-3xl border border-gold/20 bg-black/60 backdrop-blur-2xl shadow-[0_20px_60px_rgba(212,175,55,0.05)] overflow-hidden">
-            
-            {/* Glowing gold quote icon */}
-            <div className="absolute top-6 right-8 text-gold/15 pointer-events-none">
-              <Quote className="h-24 w-24 stroke-1" />
-            </div>
+          <div className="overflow-hidden px-4 py-6">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={activeIdx}
+                initial={{ opacity: 0, x: 80 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -80 }}
+                transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+                className="grid grid-cols-1 md:grid-cols-2 gap-6"
+              >
+                {/* 2 Compact cards visible per slide */}
+                {[0, 1].map((offset) => {
+                  const itemIndex = (activeIdx + offset) % reviews.length;
+                  const review = reviews[itemIndex] || fallbackTestimonials[0];
+                  return (
+                    <motion.div
+                      key={review.id || itemIndex}
+                      whileHover={{ scale: 1.02, y: -4 }}
+                      className="relative p-6 md:p-8 rounded-2xl border border-white/10 bg-black/80 backdrop-blur-xl shadow-[0_12px_40px_rgba(0,0,0,0.5)] flex flex-col justify-between gap-6 transition-all duration-300 hover:border-gold/40 hover:shadow-[0_16px_48px_rgba(212,175,55,0.1)]"
+                    >
+                      <div className="flex flex-col gap-4">
+                        {/* Rating stars & verified badge */}
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-1">
+                            {Array.from({ length: review.rating || 5 }).map((_, i) => (
+                              <Star key={i} className="h-4 w-4 fill-gold text-gold drop-shadow-[0_0_6px_rgba(212,175,55,0.5)]" />
+                            ))}
+                          </div>
+                          <span className="px-2.5 py-0.5 rounded-full border border-gold/30 bg-gold/10 text-[9px] font-mono tracking-widest text-gold uppercase font-bold">
+                            Verified Case
+                          </span>
+                        </div>
 
-            <div className="relative z-10 flex flex-col gap-8">
-              {/* Star Ratings Header */}
-              <div className="flex items-center gap-1.5">
-                {Array.from({ length: current.rating || 5 }).map((_, i) => (
-                  <Star key={i} className="h-5 w-5 fill-gold text-gold drop-shadow-[0_0_8px_rgba(212,175,55,0.6)]" />
-                ))}
-                <span className="ml-2 text-xs font-mono font-bold tracking-widest text-gold uppercase">
-                  5.0 Verified Review
-                </span>
-              </div>
+                        {/* Quote */}
+                        <blockquote className="text-xs md:text-sm font-sans text-white/90 leading-relaxed font-normal italic">
+                          &ldquo;{review.quote}&rdquo;
+                        </blockquote>
+                      </div>
 
-              {/* Quote text transition */}
-              <div className="min-h-[140px] flex items-center">
-                <AnimatePresence mode="wait">
-                  <motion.blockquote
-                    key={activeIdx}
-                    initial={{ opacity: 0, y: 15 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -15 }}
-                    transition={{ duration: 0.4 }}
-                    className="text-lg md:text-2xl font-sans font-medium text-white/95 leading-relaxed tracking-tight"
-                  >
-                    &ldquo;{current.quote}&rdquo;
-                  </motion.blockquote>
-                </AnimatePresence>
-              </div>
-
-              {/* Author details footer */}
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={activeIdx}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  transition={{ duration: 0.3 }}
-                  className="flex items-center justify-between border-t border-white/10 pt-6 mt-2 flex-wrap gap-4"
-                >
-                  <div className="flex items-center gap-4">
-                    {current.avatar && (
-                      <img
-                        src={current.avatar}
-                        alt={current.author}
-                        className="h-12 w-12 rounded-full object-cover border-2 border-gold/40 shadow-[0_0_12px_rgba(212,175,55,0.3)]"
-                      />
-                    )}
-                    <div className="flex flex-col">
-                      <h4 className="text-base font-sans font-bold text-white tracking-wide">
-                        {current.author}
-                      </h4>
-                      <span className="text-xs font-mono tracking-wider text-gold font-semibold uppercase">
-                        {current.role} {current.company ? `— ${current.company}` : ""}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Rating Badge */}
-                  <div className="px-3.5 py-1.5 rounded-full border border-gold/30 bg-gold/5 flex items-center gap-2">
-                    <Sparkles className="h-3.5 w-3.5 text-gold" />
-                    <span className="text-[10px] font-mono tracking-widest text-gold uppercase font-bold">
-                      Enterprise Case Partner
-                    </span>
-                  </div>
-                </motion.div>
-              </AnimatePresence>
-            </div>
+                      {/* Author */}
+                      <div className="flex items-center gap-3.5 pt-4 border-t border-white/10 mt-2">
+                        {review.avatar ? (
+                          <img
+                            src={review.avatar}
+                            alt={review.author}
+                            className="h-10 w-10 rounded-full object-cover border border-gold/40 shadow-[0_0_10px_rgba(212,175,55,0.2)]"
+                          />
+                        ) : (
+                          <div className="h-10 w-10 rounded-full border border-gold/40 bg-gold/10 flex items-center justify-center font-bold text-gold text-xs">
+                            {review.author?.[0] || "C"}
+                          </div>
+                        )}
+                        <div className="flex flex-col min-w-0">
+                          <h4 className="text-xs font-sans font-bold text-white tracking-wide truncate">
+                            {review.author}
+                          </h4>
+                          <span className="text-[10px] font-mono tracking-wider text-gold font-semibold uppercase truncate">
+                            {review.role} {review.company ? `— ${review.company}` : ""}
+                          </span>
+                        </div>
+                      </div>
+                    </motion.div>
+                  );
+                })}
+              </motion.div>
+            </AnimatePresence>
           </div>
 
-          {/* Navigation Controls */}
-          <div className="flex items-center justify-between mt-8">
+          {/* Sliding Controls */}
+          <div className="flex items-center justify-between mt-6 px-4">
             <div className="flex items-center gap-2">
               {reviews.map((_, idx) => (
                 <button
@@ -144,10 +135,10 @@ export function ReviewsSection() {
                   type="button"
                   suppressHydrationWarning
                   onClick={() => setActiveIdx(idx)}
-                  className={`h-2.5 rounded-full transition-all duration-400 cursor-pointer ${
+                  className={`h-2 rounded-full transition-all duration-400 cursor-pointer ${
                     idx === activeIdx
                       ? "w-8 bg-gold shadow-[0_0_12px_rgba(212,175,55,0.8)]"
-                      : "w-2.5 bg-white/20 hover:bg-white/40"
+                      : "w-2 bg-white/20 hover:bg-white/40"
                   }`}
                   aria-label={`Go to slide ${idx + 1}`}
                 />
@@ -159,7 +150,7 @@ export function ReviewsSection() {
                 type="button"
                 suppressHydrationWarning
                 onClick={prevSlide}
-                className="p-3 rounded-full border border-white/10 bg-white/5 text-white hover:border-gold/50 hover:text-gold transition-all duration-300 cursor-pointer"
+                className="p-2.5 rounded-full border border-white/10 bg-white/5 text-white hover:border-gold/50 hover:text-gold transition-all duration-300 cursor-pointer"
                 aria-label="Previous review"
               >
                 <ChevronLeft className="h-4 w-4" />
@@ -168,7 +159,7 @@ export function ReviewsSection() {
                 type="button"
                 suppressHydrationWarning
                 onClick={nextSlide}
-                className="p-3 rounded-full border border-white/10 bg-white/5 text-white hover:border-gold/50 hover:text-gold transition-all duration-300 cursor-pointer"
+                className="p-2.5 rounded-full border border-white/10 bg-white/5 text-white hover:border-gold/50 hover:text-gold transition-all duration-300 cursor-pointer"
                 aria-label="Next review"
               >
                 <ChevronRight className="h-4 w-4" />

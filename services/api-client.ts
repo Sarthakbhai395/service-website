@@ -131,8 +131,32 @@ export const fallbackTestimonials = [
   },
 ];
 
+export const fallbackTeamMembers = [
+  {
+    id: "1",
+    name: "Alex Vance",
+    role: "Chief Architect & Founder",
+    description: "Leading system design, distributed data models, and high-throughput cloud infrastructure with 12+ years of engineering experience across Silicon Valley unicorns.",
+    imageUrl: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=800",
+  },
+  {
+    id: "2",
+    name: "Elena Rostova",
+    role: "Head of Product Design",
+    description: "Architecting award-worthy UI/UX design systems, micro-interactions, and visual direction. Specializing in high-converting SaaS interfaces and design engineering.",
+    imageUrl: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=800",
+  },
+  {
+    id: "3",
+    name: "Marcus Sterling",
+    role: "Lead AI & Security Engineer",
+    description: "Spearheading LLM orchestration, RAG pipelines, cryptographic auth systems, and zero-trust security audits for enterprise client deployments.",
+    imageUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=800",
+  },
+];
+
 // Set of tables that are missing in remote schema to avoid redundant 404 network requests
-const missingTables = new Set<string>(["projects", "testimonials", "brands", "services", "contacts"]);
+const missingTables = new Set<string>(["projects", "testimonials", "brands", "services", "contacts", "team"]);
 
 function formatProject(row: any) {
   if (!row) return null;
@@ -162,6 +186,23 @@ class ApiClient {
     const hasFeaturedQuery = endpoint.includes("featured=true");
 
     try {
+      // Team / About Items
+      if (cleanEndpoint === "/team" || cleanEndpoint === "/about-team") {
+        if (typeof window !== "undefined") {
+          const localStored = localStorage.getItem("codenova_team_members");
+          if (localStored) {
+            try {
+              const parsed = JSON.parse(localStored);
+              if (Array.isArray(parsed) && parsed.length > 0) {
+                return parsed as unknown as T;
+              }
+            } catch (e) {
+              console.error("Error parsing codenova_team_members", e);
+            }
+          }
+        }
+        return fallbackTeamMembers as unknown as T;
+      }
       // 1. Projects
       if (cleanEndpoint === "/projects") {
         if (missingTables.has("projects")) {
@@ -358,6 +399,24 @@ class ApiClient {
         return { success: true, data } as unknown as T;
       }
 
+      // Team / About Items
+      if (endpoint === "/team" || endpoint === "/about-team") {
+        const newMember = {
+          id: Date.now().toString(),
+          name: body.name,
+          role: body.role,
+          description: body.description,
+          imageUrl: body.imageUrl || body.image_url || "",
+        };
+        if (typeof window !== "undefined") {
+          const stored = localStorage.getItem("codenova_team_members");
+          let list = stored ? JSON.parse(stored) : [...fallbackTeamMembers];
+          list.push(newMember);
+          localStorage.setItem("codenova_team_members", JSON.stringify(list));
+        }
+        return newMember as unknown as T;
+      }
+
       return { success: true } as unknown as T;
     } catch (error: any) {
       console.error(`ApiClient.post request to ${endpoint} error:`, error.message || error);
@@ -390,6 +449,16 @@ class ApiClient {
       const parts = endpoint.split("/");
       const resource = parts[1];
       const id = parts[2];
+
+      if (resource === "team" || resource === "about-team") {
+        if (typeof window !== "undefined") {
+          const stored = localStorage.getItem("codenova_team_members");
+          let list = stored ? JSON.parse(stored) : [...fallbackTeamMembers];
+          list = list.filter((m: any) => m.id !== id);
+          localStorage.setItem("codenova_team_members", JSON.stringify(list));
+        }
+        return { success: true } as unknown as T;
+      }
 
       let tableName = "projects";
       if (resource === "services") tableName = "services";
