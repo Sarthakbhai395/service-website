@@ -100,7 +100,7 @@ export function HeroSection() {
   return (
     <section
       ref={containerRef}
-      className="relative min-h-screen flex flex-col justify-center items-center overflow-hidden"
+      className="relative min-h-screen flex flex-col justify-center items-center overflow-hidden bg-black font-sans"
     >
       {/* Background layers */}
       <AuroraField variant="default" intensity={1} interactive />
@@ -190,28 +190,28 @@ export function HeroSection() {
           transition={{ delay: 0.45, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
           className="flex flex-wrap items-center justify-center gap-4 mt-4"
         >
-          <Link href="/contact">
-            <motion.button
+          <Link href="/contact" className="inline-block">
+            <motion.div
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              className="group/cta relative px-8 py-4 rounded-2xl text-[12px] font-heading font-semibold uppercase tracking-[0.14em] text-white overflow-hidden cursor-pointer bg-gradient-to-r from-accent-blue/20 via-accent-violet/15 to-accent-blue/20 border border-white/10 hover:border-accent-blue/30 transition-colors duration-400"
+              className="group/cta relative px-8 py-4 rounded-2xl text-[12px] font-heading font-semibold uppercase tracking-[0.14em] text-white overflow-hidden cursor-pointer bg-gradient-to-r from-accent-blue/20 via-accent-violet/15 to-accent-blue/20 border border-white/10 hover:border-accent-blue/30 transition-colors duration-400 inline-flex items-center justify-center"
             >
               <div className="absolute inset-0 -translate-x-full group-hover/cta:translate-x-full transition-transform duration-700 bg-gradient-to-r from-transparent via-white/[0.06] to-transparent" />
               <span className="relative flex items-center gap-2">
                 Start a Project
                 <ArrowUpRight className="h-4 w-4 transition-transform duration-300 group-hover/cta:translate-x-0.5 group-hover/cta:-translate-y-0.5" />
               </span>
-            </motion.button>
+            </motion.div>
           </Link>
 
-          <Link href="/projects">
-            <motion.button
+          <Link href="/projects" className="inline-block">
+            <motion.div
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              className="px-8 py-4 rounded-2xl text-[12px] font-heading font-medium uppercase tracking-[0.14em] text-ghost hover:text-white border border-white/[0.06] hover:border-white/[0.1] bg-transparent transition-all duration-300 cursor-pointer"
+              className="px-8 py-4 rounded-2xl text-[12px] font-heading font-medium uppercase tracking-[0.14em] text-ghost hover:text-white border border-white/[0.06] hover:border-white/[0.1] bg-transparent transition-all duration-300 cursor-pointer inline-flex items-center justify-center"
             >
               View Our Work
-            </motion.button>
+            </motion.div>
           </Link>
         </motion.div>
       </div>

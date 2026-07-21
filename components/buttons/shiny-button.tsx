@@ -54,6 +54,8 @@ export function ShinyButton({
 
   return (
     <motion.button
+      type={props.type || "button"}
+      suppressHydrationWarning
       ref={buttonRef}
       onMouseMove={handleMouseMove}
       onMouseEnter={() => setIsHovered(true)}

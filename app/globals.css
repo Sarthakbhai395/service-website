@@ -10,8 +10,8 @@
   --font-heading: var(--font-sans);
 
   /* Premium color system (Black, Gold, White) */
-  --color-void: #050505;
-  --color-ink: #0a0a0a;
+  --color-void: #000000;
+  --color-ink: #050505;
   --color-smoke: #121212;
   --color-steel: #8e8e8e;
   --color-ghost: #d4d4d4;
@@ -28,7 +28,7 @@
   /* Legacy tokens (keep for shadcn compatibility) */
   --color-gold: #d4af37;
   --color-platinum: #1c1c1c;
-  --color-obsidian: #050505;
+  --color-obsidian: #000000;
   --color-titanium: #ffffff;
 
   --color-background: var(--background);

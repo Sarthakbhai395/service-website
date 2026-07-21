@@ -190,17 +190,17 @@ export default function Home() {
 
           {/* CTA */}
           <div className="flex justify-center mt-14">
-            <Link href="/services">
-              <motion.button
+            <Link href="/services" className="inline-block">
+              <motion.div
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className="group/btn px-8 py-3.5 rounded-xl text-[11px] font-heading font-semibold uppercase tracking-[0.14em] text-white border border-white/[0.08] bg-white/[0.03] hover:border-gold/30 transition-all duration-300 cursor-pointer overflow-hidden relative"
+                className="group/btn px-8 py-3.5 rounded-xl text-[11px] font-heading font-semibold uppercase tracking-[0.14em] text-white border border-white/[0.08] bg-white/[0.03] hover:border-gold/30 transition-all duration-300 cursor-pointer overflow-hidden relative inline-flex items-center justify-center"
               >
                 <div className="absolute inset-0 -translate-x-full group-hover/btn:translate-x-full transition-transform duration-700 bg-gradient-to-r from-transparent via-white/[0.04] to-transparent" />
                 <span className="relative flex items-center gap-2">
                   Explore All Services <ArrowRight className="h-3.5 w-3.5" />
                 </span>
-              </motion.button>
+              </motion.div>
             </Link>
           </div>
         </div>
@@ -286,14 +286,14 @@ export default function Home() {
                           </span>
                         ))}
                       </div>
-                      <Link href={`/projects/${study.slug}`}>
-                        <motion.button
+                      <Link href={`/projects/${study.slug}`} className="inline-block">
+                        <motion.div
                           whileHover={{ scale: 1.03 }}
                           whileTap={{ scale: 0.97 }}
-                          className="px-4 py-2 rounded-lg text-[10px] font-heading font-semibold uppercase tracking-[0.12em] text-white border border-white/[0.08] bg-white/[0.03] hover:border-gold/30 transition-all duration-300 cursor-pointer flex items-center gap-1.5"
+                          className="px-4 py-2 rounded-lg text-[10px] font-heading font-semibold uppercase tracking-[0.12em] text-white border border-white/[0.08] bg-white/[0.03] hover:border-gold/30 transition-all duration-300 cursor-pointer flex items-center gap-1.5 inline-flex"
                         >
                           View Case <ArrowUpRight className="h-3 w-3 text-gold" />
-                        </motion.button>
+                        </motion.div>
                       </Link>
                     </div>
                   </div>
@@ -391,18 +391,18 @@ export default function Home() {
             viewport={{ once: true }}
             transition={{ delay: 0.3, duration: 0.6 }}
           >
-            <Link href="/contact">
-              <motion.button
+            <Link href="/contact" className="inline-block">
+              <motion.div
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.97 }}
-                className="group/cta px-10 py-5 rounded-2xl text-[13px] font-heading font-semibold uppercase tracking-[0.14em] text-white bg-gradient-to-r from-accent-rose/25 via-gold/15 to-accent-rose/25 border border-white/[0.1] hover:border-gold/30 transition-all duration-400 cursor-pointer relative overflow-hidden"
+                className="group/cta px-10 py-5 rounded-2xl text-[13px] font-heading font-semibold uppercase tracking-[0.14em] text-white bg-gradient-to-r from-accent-rose/25 via-gold/15 to-accent-rose/25 border border-white/[0.1] hover:border-gold/30 transition-all duration-400 cursor-pointer relative overflow-hidden inline-flex items-center justify-center"
               >
                 <div className="absolute inset-0 -translate-x-full group-hover/cta:translate-x-full transition-transform duration-700 bg-gradient-to-r from-transparent via-white/[0.06] to-transparent" />
                 <span className="relative flex items-center gap-2">
                   Start Your Project
                   <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover/cta:translate-x-1" />
                 </span>
-              </motion.button>
+              </motion.div>
             </Link>
           </motion.div>
         </div>

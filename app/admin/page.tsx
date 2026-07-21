@@ -423,6 +423,8 @@ export default function AdminPage() {
           {/* Controls */}
           <div className="flex items-center gap-3">
             <button
+              type="button"
+              suppressHydrationWarning
               onClick={fetchAllData}
               className="p-2.5 rounded-xl border border-white/10 bg-[#121212] text-white hover:text-gold hover:border-gold/40 cursor-pointer transition-colors"
               title="Refresh All Data"
@@ -431,6 +433,8 @@ export default function AdminPage() {
             </button>
 
             <motion.button
+              type="button"
+              suppressHydrationWarning
               onClick={handleLogout}
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.97 }}

@@ -74,17 +74,17 @@ export default function ServicesPage() {
           <p className="text-sm text-steel font-sans max-w-md">
             Not sure which service fits your project? Let&apos;s discuss your requirements.
           </p>
-          <Link href="/contact">
-            <motion.button
+          <Link href="/contact" className="inline-block">
+            <motion.div
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              className="group/btn px-8 py-3.5 rounded-xl text-[11px] font-heading font-semibold uppercase tracking-[0.14em] text-white border border-white/[0.08] bg-white/[0.03] hover:border-accent-violet/25 transition-all duration-300 cursor-pointer overflow-hidden relative"
+              className="group/btn px-8 py-3.5 rounded-xl text-[11px] font-heading font-semibold uppercase tracking-[0.14em] text-white border border-white/[0.08] bg-white/[0.03] hover:border-accent-violet/25 transition-all duration-300 cursor-pointer overflow-hidden relative inline-flex items-center justify-center"
             >
               <div className="absolute inset-0 -translate-x-full group-hover/btn:translate-x-full transition-transform duration-700 bg-gradient-to-r from-transparent via-white/[0.04] to-transparent" />
               <span className="relative flex items-center gap-2">
                 Get a Custom Proposal <ArrowRight className="h-3.5 w-3.5" />
               </span>
-            </motion.button>
+            </motion.div>
           </Link>
         </motion.div>
       </div>

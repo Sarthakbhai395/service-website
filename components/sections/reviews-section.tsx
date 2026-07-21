@@ -141,6 +141,8 @@ export function ReviewsSection() {
               {reviews.map((_, idx) => (
                 <button
                   key={idx}
+                  type="button"
+                  suppressHydrationWarning
                   onClick={() => setActiveIdx(idx)}
                   className={`h-2.5 rounded-full transition-all duration-400 cursor-pointer ${
                     idx === activeIdx
@@ -154,6 +156,8 @@ export function ReviewsSection() {
 
             <div className="flex items-center gap-3">
               <button
+                type="button"
+                suppressHydrationWarning
                 onClick={prevSlide}
                 className="p-3 rounded-full border border-white/10 bg-white/5 text-white hover:border-gold/50 hover:text-gold transition-all duration-300 cursor-pointer"
                 aria-label="Previous review"
@@ -161,6 +165,8 @@ export function ReviewsSection() {
                 <ChevronLeft className="h-4 w-4" />
               </button>
               <button
+                type="button"
+                suppressHydrationWarning
                 onClick={nextSlide}
                 className="p-3 rounded-full border border-white/10 bg-white/5 text-white hover:border-gold/50 hover:text-gold transition-all duration-300 cursor-pointer"
                 aria-label="Next review"
